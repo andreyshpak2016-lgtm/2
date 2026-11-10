@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://oreres001"]
+
+[ext_resource type="Script" path="res://scripts/systems/ResourceNode.gd" id="1_res"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_col"]
+radius = 1.6
+
+[sub_resource type="SphereMesh" id="SphereMesh_rock"]
+radius = 1.4
+height = 2.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rock"]
+albedo_color = Color(0.38, 0.34, 0.32, 1)
+metallic = 0.3
+roughness = 0.85
+
+[node name="OreResource" type="StaticBody3D" groups=["resource_node"]]
+script = ExtResource("1_res")
+resource_id = "ore"
+resource_name = "Ore"
+amount = 20
+amount_per_mine = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_col")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_rock")
+surface_material_override/0 = SubResource("StandardMaterial3D_rock")

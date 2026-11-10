@@ -1,0 +1,28 @@
+# Godot
+.godot/
+.import/
+*.translation
+export.cfg
+export_presets.cfg
+.mono/
+data_*/
+
+# Export/build outputs
+export/windows/*.exe
+export/windows/*.pck
+export/windows/*.zip
+installer/Output/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+*.bak
+
+# Temp
+*.uid~
+
+# Python/cache
+__pycache__/
+*.pyc

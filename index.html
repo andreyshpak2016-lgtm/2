@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Voxel Frontier — песочница в духе Dual Universe</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<div id="hud">
+  <div id="stats">
+    <div class="stat">◆ Кристаллы <b id="crystalCount">0</b></div>
+    <div class="stat">▦ Блоков <b id="blockCount">0</b></div>
+    <div class="stat">◈ Режим <b id="modeLabel">Пешком</b></div>
+    <div class="stat" id="netStat">● <b id="netStatus">Оффлайн</b></div>
+  </div>
+
+  <div id="crosshair"></div>
+  <div id="prompt">F — сесть в корабль</div>
+  <div id="toast"></div>
+  <div id="hotbar"></div>
+  <div id="controls-hint">ЛКМ — ставить · ПКМ — убирать · 1–6 / колесо — материал · I — инвентарь · F — корабль · Esc — пауза</div>
+</div>
+
+<div id="inventory">
+  <div class="inv-panel">
+    <div class="inv-head">
+      <div>
+        <div class="inv-title">ИНВЕНТАРЬ</div>
+        <div class="inv-sub">Добывайте блоки и стройте из них. Клик — выбрать материал.</div>
+      </div>
+      <button id="invClose" title="Закрыть">×</button>
+    </div>
+    <div id="invGrid" class="inv-grid"></div>
+    <div class="inv-foot">
+      <span id="invSelected">Выбрано: Металл</span>
+      <span>I / Esc — закрыть</span>
+    </div>
+  </div>
+</div>
+
+<div id="overlay">
+  <div class="panel">
+    <div class="eyebrow">МИНИ-ПЕСОЧНИЦА · ВДОХНОВЛЕНО DUAL UNIVERSE</div>
+    <h1>VOXEL<span>FRONTIER</span></h1>
+    <p class="sub">Строй, копай, собирай кристаллы и летай на корабле.</p>
+
+    <div class="controls-grid">
+      <div><b>WASD</b> движение</div>
+      <div><b>Мышь</b> обзор</div>
+      <div><b>Пробел</b> прыжок / ранец</div>
+      <div><b>Shift</b> бег / спуск</div>
+      <div><b>ЛКМ / ПКМ</b> поставить / убрать блок</div>
+      <div><b>1–6, колесо</b> выбор материала</div>
+      <div><b>I / E</b> инвентарь</div>
+      <div><b>F</b> сесть в корабль / выйти</div>
+      <div><b>Esc</b> пауза</div>
+    </div>
+
+    <button id="playBtn">▶ Играть</button>
+
+    <div class="overlay-foot">
+      <span id="resetBtn">Сбросить мир</span>
+    </div>
+    <div class="tip">Совет: облетите планету и соберите светящиеся кристаллы. Всё построенное сохраняется автоматически.</div>
+  </div>
+</div>
+
+<script src="lib/three.min.js"></script>
+<script src="game.js"></script>
+<script src="net.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+[gd_scene load_steps=5 format=3 uid="uid://resnode0001"]
+
+[ext_resource type="Script" path="res://scripts/systems/ResourceNode.gd" id="1_res"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_col"]
+radius = 2.2
+
+[sub_resource type="SphereMesh" id="SphereMesh_rock"]
+radius = 2.0
+height = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rock"]
+albedo_color = Color(0.45, 0.38, 0.32, 1)
+roughness = 1.0
+
+[node name="ResourceNode" type="StaticBody3D" groups=["resource_node"]]
+script = ExtResource("1_res")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_col")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_rock")
+surface_material_override/0 = SubResource("StandardMaterial3D_rock")

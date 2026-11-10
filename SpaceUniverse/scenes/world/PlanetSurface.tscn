@@ -1,0 +1,356 @@
+[gd_scene load_steps=21 format=3 uid="uid://planetsurf01"]
+
+[ext_resource type="Script" path="res://scenes/world/PlanetSurface.gd" id="1_ps"]
+[ext_resource type="PackedScene" path="res://scenes/player/PlayerCharacter.tscn" id="2_pc"]
+[ext_resource type="PackedScene" path="res://scenes/ui/HUD.tscn" id="3_hud"]
+[ext_resource type="Script" path="res://scripts/systems/BuildController.gd" id="5_bc"]
+[ext_resource type="PackedScene" path="res://scenes/world/TreeResource.tscn" id="6_tree"]
+[ext_resource type="PackedScene" path="res://scenes/world/OreResource.tscn" id="7_ore"]
+[ext_resource type="PackedScene" path="res://scenes/world/WaterResource.tscn" id="8_water"]
+[ext_resource type="Shader" path="res://scenes/world/water.gdshader" id="9_watershader"]
+[ext_resource type="Script" path="res://scripts/systems/NoiseTerrain.gd" id="10_noise"]
+
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_sky"]
+rayleigh_coefficient = 2.2
+rayleigh_color = Color(0.2, 0.42, 0.85, 1)
+mie_coefficient = 0.008
+mie_eccentricity = 0.8
+mie_color = Color(0.85, 0.9, 0.95, 1)
+turbidity = 8.0
+sun_disk_scale = 1.0
+ground_color = Color(0.18, 0.3, 0.16, 1)
+energy_multiplier = 1.15
+
+[sub_resource type="Sky" id="Sky_planet"]
+sky_material = SubResource("PhysicalSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_planet"]
+background_mode = 2
+sky = SubResource("Sky_planet")
+ambient_light_source = 2
+ambient_light_color = Color(0.58, 0.66, 0.58, 1)
+ambient_light_energy = 0.9
+tonemap_mode = 3
+tonemap_exposure = 1.05
+tonemap_white = 1.05
+ssao_enabled = true
+ssao_radius = 2.2
+ssao_intensity = 2.8
+ssil_enabled = true
+sdfgi_enabled = false
+ssr_enabled = true
+ssr_max_steps = 64
+ssr_fade_in = 0.15
+ssr_fade_out = 2.0
+glow_enabled = true
+glow_intensity = 0.7
+glow_bloom = 0.12
+glow_hdr_threshold = 0.85
+glow_hdr_scale = 2.0
+fog_enabled = true
+fog_light_color = Color(0.74, 0.86, 0.98, 1)
+fog_light_energy = 1.1
+fog_sun_scatter = 0.08
+fog_density = 0.0009
+fog_sky_affect = 0.55
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.012
+volumetric_fog_albedo = Color(0.8, 0.9, 0.99, 1)
+volumetric_fog_emission_energy = 0.25
+volumetric_fog_ambient_inject = 0.45
+volumetric_fog_sky_affect = 0.6
+adjustment_enabled = true
+adjustment_brightness = 1.06
+adjustment_contrast = 1.1
+adjustment_saturation = 1.2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
+size = Vector3(400, 4, 400)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ground"]
+size = Vector3(400, 4, 400)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_meadow"]
+albedo_color = Color(0.2, 0.46, 0.18, 1)
+roughness = 0.95
+rim_enabled = true
+rim = 0.15
+rim_tint = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grass_light"]
+albedo_color = Color(0.34, 0.66, 0.3, 1)
+roughness = 0.9
+rim_enabled = true
+rim = 0.12
+rim_tint = 0.35
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_lake"]
+top_radius = 28.0
+bottom_radius = 30.0
+height = 0.4
+radial_segments = 48
+
+[sub_resource type="BoxMesh" id="BoxMesh_river"]
+size = Vector3(10, 0.25, 140)
+
+[sub_resource type="BoxMesh" id="BoxMesh_river_branch"]
+size = Vector3(7, 0.25, 60)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_water"]
+shader = ExtResource("9_watershader")
+shader_parameter/albedo = Color(0.1, 0.45, 0.7, 0.75)
+shader_parameter/deep_color = Color(0.03, 0.2, 0.4, 0.85)
+shader_parameter/roughness = 0.04
+shader_parameter/metallic = 0.0
+shader_parameter/wave_speed = 0.7
+shader_parameter/wave_scale = 3.5
+shader_parameter/wave_strength = 0.04
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_water_deep"]
+shader = ExtResource("9_watershader")
+shader_parameter/albedo = Color(0.06, 0.35, 0.6, 0.78)
+shader_parameter/deep_color = Color(0.02, 0.12, 0.3, 0.9)
+shader_parameter/roughness = 0.03
+shader_parameter/metallic = 0.0
+shader_parameter/wave_speed = 0.5
+shader_parameter/wave_scale = 2.8
+shader_parameter/wave_strength = 0.03
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pad"]
+size = Vector3(6, 3, 6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pad"]
+albedo_color = Color(0.2, 0.7, 0.9, 1)
+emission_enabled = true
+emission = Color(0.1, 0.4, 0.6, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_tree_trunk"]
+top_radius = 0.4
+bottom_radius = 0.5
+height = 4.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_tree_top"]
+radius = 2.2
+height = 4.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_trunk"]
+albedo_color = Color(0.36, 0.24, 0.14, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_leaves"]
+albedo_color = Color(0.16, 0.42, 0.14, 1)
+roughness = 1.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_hill"]
+radius = 12.0
+height = 12.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_hill_large"]
+radius = 20.0
+height = 18.0
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_hill"]
+radius = 12.0
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_hill_large"]
+radius = 20.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hill"]
+albedo_color = Color(0.24, 0.46, 0.2, 1)
+roughness = 0.98
+rim_enabled = true
+rim = 0.1
+rim_tint = 0.3
+
+[node name="PlanetSurface" type="Node3D"]
+script = ExtResource("1_ps")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_planet")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 30, 0)
+light_energy = 1.5
+light_color = Color(1, 0.98, 0.94, 1)
+shadow_enabled = true
+directional_shadow_mode = 1
+directional_shadow_max_distance = 300.0
+
+[node name="NoiseTerrain" type="Node3D" parent="."]
+script = ExtResource("10_noise")
+size = Vector2(400, 400)
+resolution = 96
+height_scale = 14.0
+noise_frequency = 0.009
+noise_seed = 1337
+water_level = -1.0
+water_margin = 10.0
+
+[node name="MeadowPatches" type="Node3D" parent="."]
+
+[node name="Trees" type="Node3D" parent="."]
+
+[node name="Tree1" type="Node3D" parent="Trees"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -25)
+
+[node name="Trunk" type="MeshInstance3D" parent="Trees/Tree1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+mesh = SubResource("CylinderMesh_tree_trunk")
+surface_material_override/0 = SubResource("StandardMaterial3D_trunk")
+
+[node name="Top" type="MeshInstance3D" parent="Trees/Tree1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0)
+mesh = SubResource("SphereMesh_tree_top")
+surface_material_override/0 = SubResource("StandardMaterial3D_leaves")
+
+[node name="Tree2" type="Node3D" parent="Trees"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, 20)
+
+[node name="Trunk" type="MeshInstance3D" parent="Trees/Tree2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+mesh = SubResource("CylinderMesh_tree_trunk")
+surface_material_override/0 = SubResource("StandardMaterial3D_trunk")
+
+[node name="Top" type="MeshInstance3D" parent="Trees/Tree2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0)
+mesh = SubResource("SphereMesh_tree_top")
+surface_material_override/0 = SubResource("StandardMaterial3D_leaves")
+
+[node name="Resources" type="Node3D" parent="."]
+
+[node name="TreeWood1" parent="Resources" instance=ExtResource("6_tree")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, -12)
+
+[node name="TreeWood2" parent="Resources" instance=ExtResource("6_tree")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0, 8)
+
+[node name="TreeWood3" parent="Resources" instance=ExtResource("6_tree")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 35)
+
+[node name="Ore1" parent="Resources" instance=ExtResource("7_ore")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35, 0.5, 55)
+
+[node name="Ore2" parent="Resources" instance=ExtResource("7_ore")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0.5, 25)
+
+[node name="Ore3" parent="Resources" instance=ExtResource("7_ore")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28, 0.5, -68)
+
+[node name="Water1" parent="Resources" instance=ExtResource("8_water")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, -2.5, -35)
+
+[node name="Water2" parent="Resources" instance=ExtResource("8_water")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, -1.5, -10)
+
+[node name="Water3" parent="Resources" instance=ExtResource("8_water")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, -0.2, -55)
+
+[node name="Terrain" type="Node3D" parent="."]
+
+[node name="Hill1" type="StaticBody3D" parent="Terrain" groups=["build_surface"]]
+transform = Transform3D(1, 0, 0, 0, 0.45, 0, 0, 0, 1.2, -55, -1.5, 20)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Terrain/Hill1"]
+mesh = SubResource("SphereMesh_hill_large")
+surface_material_override/0 = SubResource("StandardMaterial3D_hill")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/Hill1"]
+shape = SubResource("SphereShape3D_hill_large")
+
+[node name="Hill2" type="StaticBody3D" parent="Terrain" groups=["build_surface"]]
+transform = Transform3D(1.2, 0, 0, 0, 0.4, 0, 0, 0, 1, 60, -1.2, 55)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Terrain/Hill2"]
+mesh = SubResource("SphereMesh_hill")
+surface_material_override/0 = SubResource("StandardMaterial3D_hill")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/Hill2"]
+shape = SubResource("SphereShape3D_hill")
+
+[node name="Hill3" type="StaticBody3D" parent="Terrain" groups=["build_surface"]]
+transform = Transform3D(1, 0, 0, 0, 0.35, 0, 0, 0, 1.4, 25, -1.8, -70)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Terrain/Hill3"]
+mesh = SubResource("SphereMesh_hill_large")
+surface_material_override/0 = SubResource("StandardMaterial3D_hill")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/Hill3"]
+shape = SubResource("SphereShape3D_hill_large")
+
+[node name="LakeBank1" type="StaticBody3D" parent="Terrain" groups=["build_surface"]]
+transform = Transform3D(1.1, 0, 0, 0, 0.5, 0, 0, 0, 1.1, 18, -0.8, -35)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Terrain/LakeBank1"]
+mesh = SubResource("SphereMesh_hill")
+surface_material_override/0 = SubResource("StandardMaterial3D_hill")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/LakeBank1"]
+shape = SubResource("SphereShape3D_hill")
+
+[node name="LakeBank2" type="StaticBody3D" parent="Terrain" groups=["build_surface"]]
+transform = Transform3D(1.0, 0, 0, 0, 0.55, 0, 0, 0, 1.2, 72, -0.7, -35)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Terrain/LakeBank2"]
+mesh = SubResource("SphereMesh_hill")
+surface_material_override/0 = SubResource("StandardMaterial3D_hill")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/LakeBank2"]
+shape = SubResource("SphereShape3D_hill")
+
+[node name="LakeBank3" type="StaticBody3D" parent="Terrain" groups=["build_surface"]]
+transform = Transform3D(1.3, 0, 0, 0, 0.45, 0, 0, 0, 1.0, 45, -0.9, -8)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Terrain/LakeBank3"]
+mesh = SubResource("SphereMesh_hill_large")
+surface_material_override/0 = SubResource("StandardMaterial3D_hill")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/LakeBank3"]
+shape = SubResource("SphereShape3D_hill_large")
+
+[node name="LakeBank4" type="StaticBody3D" parent="Terrain" groups=["build_surface"]]
+transform = Transform3D(1.2, 0, 0, 0, 0.5, 0, 0, 0, 1.1, 45, -0.8, -62)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Terrain/LakeBank4"]
+mesh = SubResource("SphereMesh_hill_large")
+surface_material_override/0 = SubResource("StandardMaterial3D_hill")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/LakeBank4"]
+shape = SubResource("SphereShape3D_hill_large")
+
+[node name="RiverBank1" type="StaticBody3D" parent="Terrain" groups=["build_surface"]]
+transform = Transform3D(0.8, 0, 0, 0, 0.35, 0, 0, 0, 1.8, -40, -0.9, -5)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Terrain/RiverBank1"]
+mesh = SubResource("SphereMesh_hill")
+surface_material_override/0 = SubResource("StandardMaterial3D_hill")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/RiverBank1"]
+shape = SubResource("SphereShape3D_hill")
+
+[node name="RiverBank2" type="StaticBody3D" parent="Terrain" groups=["build_surface"]]
+transform = Transform3D(0.9, 0, 0, 0, 0.35, 0, 0, 0, 1.6, -8, -0.9, -18)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Terrain/RiverBank2"]
+mesh = SubResource("SphereMesh_hill")
+surface_material_override/0 = SubResource("StandardMaterial3D_hill")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/RiverBank2"]
+shape = SubResource("SphereShape3D_hill")
+
+[node name="PlayerCharacter" parent="." instance=ExtResource("2_pc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.1, 5)
+
+[node name="Base" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="PadMesh" type="CSGBox3D" parent="Base"]
+size = Vector3(6, 0.3, 6)
+material = SubResource("StandardMaterial3D_pad")
+
+[node name="HUD" parent="." instance=ExtResource("3_hud")]
+
+[node name="Builds" type="Node3D" parent="."]
+
+[node name="BuildController" type="Node3D" parent="." node_paths=PackedStringArray("build_root")]
+script = ExtResource("5_bc")
+build_root = NodePath("../Builds")

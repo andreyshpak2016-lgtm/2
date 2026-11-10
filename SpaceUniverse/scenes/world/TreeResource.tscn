@@ -1,0 +1,40 @@
+[gd_scene load_steps=6 format=3 uid="uid://treeres001"]
+
+[ext_resource type="Script" path="res://scripts/systems/ResourceNode.gd" id="1_res"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_col"]
+height = 4.0
+radius = 1.2
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_trunk"]
+top_radius = 0.35
+bottom_radius = 0.45
+height = 3.5
+
+[sub_resource type="SphereMesh" id="SphereMesh_top"]
+radius = 2.0
+height = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_leaves"]
+albedo_color = Color(0.18, 0.45, 0.16, 1)
+roughness = 1.0
+
+[node name="TreeResource" type="StaticBody3D" groups=["resource_node"]]
+script = ExtResource("1_res")
+resource_id = "wood"
+resource_name = "Wood"
+amount = 15
+amount_per_mine = 5
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("CylinderShape3D_col")
+
+[node name="Trunk" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+mesh = SubResource("CylinderMesh_trunk")
+
+[node name="Top" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, 0)
+mesh = SubResource("SphereMesh_top")
+surface_material_override/0 = SubResource("StandardMaterial3D_leaves")

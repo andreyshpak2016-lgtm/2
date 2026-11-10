@@ -1,0 +1,140 @@
+[gd_scene load_steps=14 format=3 uid="uid://b3m7k2ship001"]
+
+[ext_resource type="Script" path="res://scripts/systems/ShipController.gd" id="1_ship"]
+[ext_resource type="Script" path="res://scripts/systems/ShipCameraRig.gd" id="2_cam"]
+[ext_resource type="Script" path="res://scripts/systems/ShipInteractor.gd" id="3_int"]
+[ext_resource type="Script" path="res://scripts/systems/ShipEffects.gd" id="4_fx"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(1.6, 0.6, 3.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_body"]
+size = Vector3(1.6, 0.6, 3.0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
+albedo_color = Color(0.45, 0.5, 0.58, 1)
+metallic = 0.4
+roughness = 0.5
+
+[sub_resource type="BoxMesh" id="BoxMesh_engine"]
+size = Vector3(0.35, 0.25, 0.25)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_engine"]
+albedo_color = Color(0.2, 0.7, 1.0, 1)
+emission_enabled = true
+emission = Color(0.2, 0.7, 1.0, 1)
+emission_energy_multiplier = 1.5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_thruster"]
+top_radius = 0.08
+bottom_radius = 0.18
+height = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_thruster"]
+albedo_color = Color(1.0, 0.5, 0.15, 1)
+emission_enabled = true
+emission = Color(1.0, 0.45, 0.1, 1)
+emission_energy_multiplier = 1.2
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_arm"]
+radius = 0.3
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_sensor"]
+radius = 12.0
+
+[node name="PlayerShip" type="RigidBody3D"]
+mass = 1.0
+gravity_scale = 0.0
+linear_damp = 0.5
+angular_damp = 1.5
+script = ExtResource("1_ship")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_body")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_body")
+surface_material_override/0 = SubResource("StandardMaterial3D_body")
+
+[node name="EngineLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45, 0, 1.55)
+mesh = SubResource("BoxMesh_engine")
+surface_material_override/0 = SubResource("StandardMaterial3D_engine")
+
+[node name="EngineRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45, 0, 1.55)
+mesh = SubResource("BoxMesh_engine")
+surface_material_override/0 = SubResource("StandardMaterial3D_engine")
+
+[node name="ThrusterGlow" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 1.75)
+mesh = SubResource("CylinderMesh_thruster")
+surface_material_override/0 = SubResource("StandardMaterial3D_thruster")
+
+[node name="Nose" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+
+[node name="FirstPersonCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -0.8)
+current = false
+fov = 75.0
+far = 100000.0
+
+[node name="CameraRig" type="Node3D" parent="." node_paths=PackedStringArray("first_person_camera", "third_person_camera", "spring_arm")]
+script = ExtResource("2_cam")
+first_person_camera = NodePath("../FirstPersonCamera")
+third_person_camera = NodePath("SpringArm3D/ThirdPersonCamera")
+spring_arm = NodePath("SpringArm3D")
+first_person_fov = 75.0
+third_person_fov = 80.0
+third_person_distance = 8.0
+follow_smoothing = 8.0
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraRig"]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 1.2, 0)
+shape = SubResource("SphereShape3D_arm")
+spring_length = 8.0
+
+[node name="ThirdPersonCamera" type="Camera3D" parent="CameraRig/SpringArm3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+current = true
+fov = 80.0
+far = 100000.0
+
+[node name="InteractionSensor" type="Area3D" parent="." node_paths=PackedStringArray("ship")]
+script = ExtResource("3_int")
+ship = NodePath("..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionSensor"]
+shape = SubResource("SphereShape3D_sensor")
+
+[node name="ShipLights" type="Node3D" parent="."]
+
+[node name="HeadlightLeft" type="SpotLight3D" parent="ShipLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, -0.05, -1.5)
+light_color = Color(0.9, 0.95, 1, 1)
+light_energy = 2.5
+spot_range = 60.0
+spot_angle = 35.0
+shadow_enabled = true
+
+[node name="HeadlightRight" type="SpotLight3D" parent="ShipLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, -0.05, -1.5)
+light_color = Color(0.9, 0.95, 1, 1)
+light_energy = 2.5
+spot_range = 60.0
+spot_angle = 35.0
+shadow_enabled = true
+
+[node name="EngineLight" type="OmniLight3D" parent="ShipLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.8)
+light_color = Color(0.4, 0.8, 1, 1)
+light_energy = 0.8
+omni_range = 8.0
+
+[node name="ShipEffects" type="Node3D" parent="." node_paths=PackedStringArray("engine_meshes", "engine_light", "headlight_left", "headlight_right")]
+script = ExtResource("4_fx")
+engine_meshes = [NodePath("../EngineLeft"), NodePath("../EngineRight"), NodePath("../ThrusterGlow")]
+engine_light = NodePath("../ShipLights/EngineLight")
+headlight_left = NodePath("../ShipLights/HeadlightLeft")
+headlight_right = NodePath("../ShipLights/HeadlightRight")

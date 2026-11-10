@@ -1,0 +1,13 @@
+{
+  "name": "voxel-frontier-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Кооперативный сервер Voxel Frontier",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

@@ -1,0 +1,178 @@
+[gd_scene load_steps=3 format=3 uid="uid://c4hudscene001"]
+
+[ext_resource type="Script" path="res://scripts/systems/HUD.gd" id="1_hud"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.08, 0.1, 0.14, 0.78)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.6, 0.9, 0.7)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Space Universe"
+
+[node name="SpeedLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Speed: 0.0 m/s"
+
+[node name="HintLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Controls"
+
+[node name="BuildToolLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Build Tool: -"
+
+[node name="InventoryHintLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Tab/I - Inventory"
+
+[node name="Crosshair" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="CrosshairLabel" type="Label" parent="Crosshair"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 1, 0.9, 0.9)
+theme_override_font_sizes/font_size = 24
+text = "+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="InventoryPanel" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -180.0
+offset_right = 220.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Margin" type="MarginContainer" parent="InventoryPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="InventoryPanel/Margin"]
+layout_mode = 2
+
+[node name="Header" type="Label" parent="InventoryPanel/Margin/VBox"]
+layout_mode = 2
+text = "Инвентарь"
+horizontal_alignment = 1
+
+[node name="Items" type="RichTextLabel" parent="InventoryPanel/Margin/VBox"]
+custom_minimum_size = Vector2(380, 220)
+layout_mode = 2
+bbcode_enabled = true
+text = "(пусто)"
+fit_content = true
+scroll_active = false
+
+[node name="ToolsHeader" type="Label" parent="InventoryPanel/Margin/VBox"]
+layout_mode = 2
+text = "Инструменты строительства"
+
+[node name="Tools" type="Label" parent="InventoryPanel/Margin/VBox"]
+layout_mode = 2
+text = "B - режим строительства\n1 - Блок, 2 - Персонаж\nT - инструмент (Установка/Удаление)\nR - поворот\nЛКМ - применить, ПКМ - удалить"
+autowrap_mode = 2
+
+[node name="BuildPanel" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -360.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 360.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Margin" type="MarginContainer" parent="BuildPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="BuildPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Header" type="Label" parent="BuildPanel/Margin/VBox"]
+layout_mode = 2
+text = "Меню строительства"
+horizontal_alignment = 1
+
+[node name="Status" type="Label" parent="BuildPanel/Margin/VBox"]
+layout_mode = 2
+text = "Инструмент: - | Поворот: 0°"
+autowrap_mode = 2
+
+[node name="ObjectsLabel" type="Label" parent="BuildPanel/Margin/VBox"]
+layout_mode = 2
+text = "Объекты:"
+
+[node name="Items" type="ItemList" parent="BuildPanel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+allow_reselect = true
+auto_height = true
+
+[node name="Buttons" type="HBoxContainer" parent="BuildPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="ToolButton" type="Button" parent="BuildPanel/Margin/VBox/Buttons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Инструмент (T)"
+
+[node name="RotateButton" type="Button" parent="BuildPanel/Margin/VBox/Buttons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Поворот (R)"
+
+[node name="Help" type="Label" parent="BuildPanel/Margin/VBox"]
+layout_mode = 2
+text = "B - закрыть меню\nЛКМ - поставить/применить\nПКМ - удалить\n1/2 - быстрый выбор"
+autowrap_mode = 2

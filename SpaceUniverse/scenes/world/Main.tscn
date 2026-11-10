@@ -1,0 +1,283 @@
+[gd_scene format=3 uid="uid://mainworld001"]
+
+[ext_resource type="PackedScene" uid="uid://c4hudscene001" path="res://scenes/ui/HUD.tscn" id="2_hud"]
+[ext_resource type="Script" uid="uid://cx0mdasocuex6" path="res://scenes/world/Main.gd" id="3_main"]
+[ext_resource type="PackedScene" uid="uid://resnode0001" path="res://scenes/world/ResourceNode.tscn" id="4_res"]
+[ext_resource type="PackedScene" uid="uid://land0one001" path="res://scenes/world/LandingZone.tscn" id="5_lz"]
+[ext_resource type="Shader" uid="uid://cd5jh37yak0d" path="res://scenes/world/star_sky.gdshader" id="6_skyshader"]
+[ext_resource type="Script" uid="uid://0laj21y2bqr6" path="res://scripts/systems/Comet.gd" id="7_comet"]
+[ext_resource type="Shader" uid="uid://cp3fpymvpa721" path="res://scenes/world/earth_planet.gdshader" id="8_earth"]
+[ext_resource type="Script" uid="uid://c5fnygqleb7t8" path="res://scripts/systems/OrbitBody.gd" id="9_orbit"]
+[ext_resource type="Shader" uid="uid://bybhp51liow6g" path="res://scenes/world/moon_planet.gdshader" id="10_moon"]
+[ext_resource type="PackedScene" path="res://scenes/player/PlayerCharacter.tscn" id="11_eva"]
+[ext_resource type="Script" path="res://scripts/systems/BuildController.gd" id="12_bc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_starsky"]
+shader = ExtResource("6_skyshader")
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("ShaderMaterial_starsky")
+
+[sub_resource type="Environment" id="Environment_space"]
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_source = 2
+ambient_light_color = Color(0.08, 0.1, 0.18, 1)
+ambient_light_energy = 0.35
+tonemap_mode = 3
+glow_enabled = true
+glow_intensity = 0.9
+glow_bloom = 0.2
+glow_hdr_threshold = 0.9
+adjustment_enabled = true
+adjustment_brightness = 1.02
+adjustment_contrast = 1.08
+adjustment_saturation = 1.1
+
+[sub_resource type="SphereMesh" id="SphereMesh_sun"]
+radius = 220.0
+height = 440.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sun"]
+shading_mode = 0
+albedo_color = Color(1, 0.85, 0.35, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_planet"]
+radius = 1500.0
+height = 3000.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_planet"]
+render_priority = 0
+shader = ExtResource("8_earth")
+shader_parameter/ocean_color = Color(0.03, 0.18, 0.45, 1)
+shader_parameter/shallow_color = Color(0.08, 0.35, 0.55, 1)
+shader_parameter/land_color = Color(0.18, 0.42, 0.16, 1)
+shader_parameter/meadow_color = Color(0.28, 0.55, 0.22, 1)
+shader_parameter/mountain_color = Color(0.45, 0.4, 0.32, 1)
+shader_parameter/snow_color = Color(0.92, 0.95, 1, 1)
+shader_parameter/land_threshold = 0.02
+shader_parameter/noise_scale = 5.0
+shader_parameter/roughness = 0.85
+
+[sub_resource type="SphereMesh" id="SphereMesh_moon"]
+radius = 220.0
+height = 440.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_moon"]
+render_priority = 0
+shader = ExtResource("10_moon")
+shader_parameter/base_color = Color(0.58, 0.57, 0.55, 1)
+shader_parameter/dark_color = Color(0.38, 0.37, 0.36, 1)
+shader_parameter/light_color = Color(0.72, 0.71, 0.69, 1)
+shader_parameter/noise_scale = 10.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_distant_star"]
+radius = 12.0
+height = 24.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_distant_star"]
+albedo_color = Color(1, 0.95, 0.85, 1)
+emission_enabled = true
+emission = Color(1, 0.9, 0.7, 1)
+emission_energy_multiplier = 3.5
+
+[sub_resource type="SphereMesh" id="SphereMesh_bh_core"]
+radius = 18.0
+height = 36.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bh_core"]
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="TorusMesh" id="TorusMesh_bh_disk"]
+inner_radius = 22.0
+outer_radius = 42.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bh_disk"]
+transparency = 1
+albedo_color = Color(1, 0.45, 0.1, 0.85)
+roughness = 0.4
+emission_enabled = true
+emission = Color(1, 0.35, 0.05, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="TorusMesh" id="TorusMesh_bh_disk_inner"]
+inner_radius = 19.0
+outer_radius = 24.0
+rings = 48
+ring_segments = 24
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bh_disk_inner"]
+transparency = 1
+albedo_color = Color(0.7, 0.2, 1, 0.7)
+roughness = 0.3
+emission_enabled = true
+emission = Color(0.6, 0.2, 1, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_comet_core"]
+radius = 1.2
+height = 2.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_comet_core"]
+albedo_color = Color(0.75, 0.82, 0.95, 1)
+roughness = 0.3
+emission_enabled = true
+emission = Color(0.4, 0.6, 1, 1)
+emission_energy_multiplier = 1.5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_comet_tail"]
+top_radius = 0.2
+bottom_radius = 2.2
+height = 18.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_comet_tail"]
+transparency = 1
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.4, 0.7, 1, 0.35)
+
+[node name="Main" type="Node3D" unique_id=397029531]
+script = ExtResource("3_main")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1134545103]
+environment = SubResource("Environment_space")
+
+[node name="SunBody" type="Node3D" parent="." unique_id=1985734733]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1200, 300, -3500)
+
+[node name="SunMesh" type="MeshInstance3D" parent="SunBody" unique_id=1057216134]
+mesh = SubResource("SphereMesh_sun")
+surface_material_override/0 = SubResource("StandardMaterial3D_sun")
+
+[node name="SunLight" type="OmniLight3D" parent="SunBody" unique_id=2061043743]
+light_color = Color(1, 0.95, 0.85, 1)
+light_energy = 4.0
+shadow_enabled = true
+omni_range = 20000.0
+omni_attenuation = 0.8
+
+[node name="SunDirectional" type="DirectionalLight3D" parent="SunBody" unique_id=713953365]
+light_color = Color(1, 0.97, 0.9, 1)
+light_energy = 1.1
+shadow_enabled = true
+
+[node name="EarthOrbit" type="Node3D" parent="." unique_id=651303154]
+script = ExtResource("9_orbit")
+orbit_center_path = NodePath("../SunBody")
+orbit_radius = 2200.0
+orbit_speed = 0.03
+initial_angle = 2.8
+self_rotation_speed = Vector3(0, 0.15, 0)
+
+[node name="PlanetPlaceholder" type="MeshInstance3D" parent="EarthOrbit" unique_id=347333331]
+mesh = SubResource("SphereMesh_planet")
+surface_material_override/0 = SubResource("ShaderMaterial_planet")
+
+[node name="LandingZonePlanet" parent="EarthOrbit" unique_id=1084647840 instance=ExtResource("5_lz")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1505, 0)
+location_name = "Earth-like Outpost"
+
+[node name="MoonOrbit" type="Node3D" parent="EarthOrbit" unique_id=1754489415]
+script = ExtResource("9_orbit")
+orbit_center_path = NodePath("..")
+orbit_radius = 1900.0
+orbit_speed = 0.12
+orbit_axis = Vector3(0.1, 1, 0)
+initial_angle = 0.4
+self_rotation_speed = Vector3(0, 0.05, 0)
+
+[node name="Moon" type="MeshInstance3D" parent="EarthOrbit/MoonOrbit" unique_id=1563151133]
+mesh = SubResource("SphereMesh_moon")
+surface_material_override/0 = SubResource("ShaderMaterial_moon")
+
+[node name="LandingZoneMoon" parent="EarthOrbit/MoonOrbit" unique_id=1763151199 instance=ExtResource("5_lz")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 225, 0)
+target_scene_path = "res://scenes/world/MoonSurface.tscn"
+location_name = "Lunar Outpost"
+
+[node name="DistantStar" type="MeshInstance3D" parent="." unique_id=1820173515]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3000, 800, -8000)
+mesh = SubResource("SphereMesh_distant_star")
+surface_material_override/0 = SubResource("StandardMaterial3D_distant_star")
+
+[node name="HUD" parent="." unique_id=770391463 instance=ExtResource("2_hud")]
+
+[node name="EVAPlayer" parent="." unique_id=880391464 instance=ExtResource("11_eva")]
+visible = false
+process_mode = 4
+
+[node name="SpaceBuilds" type="Node3D" parent="." unique_id=880391465]
+
+[node name="SpaceBuildController" type="Node3D" parent="." unique_id=880391466 node_paths=PackedStringArray("build_root")]
+script = ExtResource("12_bc")
+build_root = NodePath("../SpaceBuilds")
+
+[node name="Resources" type="Node3D" parent="." unique_id=247636618]
+
+[node name="AsteroidIron1" parent="Resources" unique_id=863272580 instance=ExtResource("4_res")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -40)
+amount = 30
+
+[node name="AsteroidIce1" parent="Resources" unique_id=1786429310 instance=ExtResource("4_res")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 6, -70)
+resource_id = "ice"
+resource_name = "Ice"
+amount = 20
+
+[node name="AsteroidSilicon1" parent="Resources" unique_id=579571089 instance=ExtResource("4_res")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, -4, -95)
+resource_id = "silicon"
+resource_name = "Silicon"
+
+[node name="Celestials" type="Node3D" parent="." unique_id=535827343]
+
+[node name="BlackHole" type="Node3D" parent="Celestials" unique_id=983077724]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2500, 400, -7000)
+
+[node name="Core" type="MeshInstance3D" parent="Celestials/BlackHole" unique_id=1608750180]
+mesh = SubResource("SphereMesh_bh_core")
+surface_material_override/0 = SubResource("StandardMaterial3D_bh_core")
+
+[node name="AccretionDisk" type="MeshInstance3D" parent="Celestials/BlackHole" unique_id=1188592742]
+transform = Transform3D(1, 0, 0, 0, 0.2, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("TorusMesh_bh_disk")
+surface_material_override/0 = SubResource("StandardMaterial3D_bh_disk")
+
+[node name="AccretionDiskInner" type="MeshInstance3D" parent="Celestials/BlackHole" unique_id=1856797699]
+transform = Transform3D(0.939693, 0.34202, 0, -0.068404, 0.187939, 0.979848, 0.335112, -0.920505, 0.2, 0, 0, 0)
+mesh = SubResource("TorusMesh_bh_disk_inner")
+surface_material_override/0 = SubResource("StandardMaterial3D_bh_disk_inner")
+
+[node name="Comet1" type="Node3D" parent="Celestials" unique_id=1419174990]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -400, 120, -300)
+script = ExtResource("7_comet")
+travel_direction = Vector3(1, -0.05, -0.4)
+speed = 22.0
+path_length = 1400.0
+
+[node name="Core" type="MeshInstance3D" parent="Celestials/Comet1" unique_id=436396938]
+mesh = SubResource("SphereMesh_comet_core")
+surface_material_override/0 = SubResource("StandardMaterial3D_comet_core")
+
+[node name="Tail" type="MeshInstance3D" parent="Celestials/Comet1" unique_id=752774843]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 10)
+mesh = SubResource("CylinderMesh_comet_tail")
+surface_material_override/0 = SubResource("StandardMaterial3D_comet_tail")
+
+[node name="Comet2" type="Node3D" parent="Celestials" unique_id=616227888]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 600, -80, -900)
+script = ExtResource("7_comet")
+travel_direction = Vector3(-0.8, 0.1, 0.5)
+speed = 16.0
+path_length = 1600.0
+reset_offset = 500.0
+
+[node name="Core" type="MeshInstance3D" parent="Celestials/Comet2" unique_id=587903461]
+mesh = SubResource("SphereMesh_comet_core")
+surface_material_override/0 = SubResource("StandardMaterial3D_comet_core")
+
+[node name="Tail" type="MeshInstance3D" parent="Celestials/Comet2" unique_id=2010304136]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 10)
+mesh = SubResource("CylinderMesh_comet_tail")
+surface_material_override/0 = SubResource("StandardMaterial3D_comet_tail")
