@@ -26,3 +26,6 @@ Thumbs.db
 # Python/cache
 __pycache__/
 *.pyc
+
+# Node
+node_modules/
