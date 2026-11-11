@@ -180,10 +180,10 @@ directional_shadow_max_distance = 300.0
 script = ExtResource("10_noise")
 size = Vector2(400, 400)
 resolution = 96
-height_scale = 14.0
-noise_frequency = 0.009
+height_scale = 12.0
+noise_frequency = 0.01
 noise_seed = 1337
-water_level = -1.0
+water_level = -1.2
 water_margin = 10.0
 
 [node name="MeadowPatches" type="Node3D" parent="."]

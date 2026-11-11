@@ -10,7 +10,6 @@ extends Node3D
 
 var _ground_mat := StandardMaterial3D.new()
 var _noise: FastNoiseLite
-var _noise_m: FastNoiseLite
 var _noise_basin: FastNoiseLite
 
 func _ready() -> void:
@@ -33,14 +32,6 @@ func _init_noises() -> void:
 	_noise.fractal_lacunarity = 2.0
 	_noise.fractal_gain = 0.5
 
-	_noise_m = FastNoiseLite.new()
-	_noise_m.seed = noise_seed + 911
-	_noise_m.noise_type = FastNoiseLite.TYPE_SIMPLEX
-	_noise_m.frequency = noise_frequency * 0.55
-	_noise_m.fractal_octaves = 4
-	_noise_m.fractal_lacunarity = 2.1
-	_noise_m.fractal_gain = 0.45
-
 	_noise_basin = FastNoiseLite.new()
 	_noise_basin.seed = noise_seed + 77
 	_noise_basin.noise_type = FastNoiseLite.TYPE_SIMPLEX
@@ -49,24 +40,15 @@ func _init_noises() -> void:
 func _height_at(wx: float, wz: float) -> float:
 	if _noise == null:
 		_init_noises()
-	var base_n := _noise.get_noise_2d(wx, wz)
-	var m_n := _noise_m.get_noise_2d(wx + 120.0, wz - 80.0)
-	# ridged component for mountains
-	var ridged := 1.0 - absf(m_n)
-	ridged = ridged * ridged
-	var h := base_n * height_scale * 0.55
-	h += ridged * height_scale * 1.6
+	var h := _noise.get_noise_2d(wx, wz) * height_scale
 	# soften spawn area near center
 	var d := Vector2(wx, wz).length()
-	var flat := smoothstep(0.0, 40.0, d)
-	h = lerpf(0.6, h, flat)
+	var flat := smoothstep(0.0, 35.0, d)
+	h = lerpf(0.5, h, flat)
 	# natural basins/lakes in some areas
 	var basin := _noise_basin.get_noise_2d(wx, wz)
-	if basin < -0.22:
-		h -= (-0.22 - basin) * 9.0
-	# make some mountain regions higher away from center
-	if d > 70.0 and ridged > 0.35:
-		h += (ridged - 0.35) * 10.0
+	if basin < -0.25:
+		h -= (-0.25 - basin) * 8.0
 	return h
 
 func generate() -> void:
@@ -157,111 +139,6 @@ func generate() -> void:
 	water_mi.material_override = wm
 	add_child(water_mi)
 
-	_generate_caves()
-
-func _generate_caves() -> void:
-	var rng := RandomNumberGenerator.new()
-	rng.seed = noise_seed + 4242
-	var placed := 0
-	var attempts := 0
-	while placed < 4 and attempts < 80:
-		attempts += 1
-		var x := rng.randf_range(-size.x * 0.38, size.x * 0.38)
-		var z := rng.randf_range(-size.y * 0.38, size.y * 0.38)
-		if Vector2(x, z).length() < 55.0:
-			continue
-		var h := _height_at(x, z)
-		if h < water_level + 2.5 or h < 3.0 or h > 16.0:
-			continue
-		# estimate slope
-		var h2 := _height_at(x + 2.0, z)
-		var slope := absf(h2 - h)
-		if slope < 0.2:
-			continue
-		_spawn_cave(Vector3(x, h, z), rng.randf_range(0.0, TAU))
-		placed += 1
-
-func _spawn_cave(pos: Vector3, rot_y: float) -> void:
-	var cave := Node3D.new()
-	cave.name = "CaveEntrance"
-	cave.position = pos
-	cave.rotation = Vector3(0, rot_y, 0)
-	add_child(cave)
-
-	var rock_mat := StandardMaterial3D.new()
-	rock_mat.albedo_color = Color(0.38, 0.36, 0.33, 1.0)
-	rock_mat.roughness = 1.0
-
-	var dark_mat := StandardMaterial3D.new()
-	dark_mat.albedo_color = Color(0.02, 0.02, 0.03, 1.0)
-	dark_mat.roughness = 1.0
-	dark_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-
-	# Surrounding rock mound
-	var mound := MeshInstance3D.new()
-	var mound_mesh := SphereMesh.new()
-	mound_mesh.radius = 3.2
-	mound_mesh.height = 4.8
-	mound.mesh = mound_mesh
-	mound.material_override = rock_mat
-	mound.position = Vector3(0, 0.8, -0.2)
-	mound.scale = Vector3(1.4, 1.0, 1.3)
-	cave.add_child(mound)
-
-	# Dark tunnel interior (visual cave)
-	var inner := MeshInstance3D.new()
-	var inner_mesh := BoxMesh.new()
-	inner_mesh.size = Vector3(2.2, 2.2, 4.5)
-	inner.mesh = inner_mesh
-	inner.material_override = dark_mat
-	inner.position = Vector3(0, 1.0, -1.4)
-	cave.add_child(inner)
-
-	# Entrance frame rocks
-	var left := MeshInstance3D.new()
-	var lm := BoxMesh.new()
-	lm.size = Vector3(0.9, 2.4, 1.2)
-	left.mesh = lm
-	left.material_override = rock_mat
-	left.position = Vector3(-1.35, 1.1, 0.5)
-	left.rotation_degrees = Vector3(0, 8, -6)
-	cave.add_child(left)
-
-	var right := MeshInstance3D.new()
-	var rm := BoxMesh.new()
-	rm.size = Vector3(0.9, 2.4, 1.2)
-	right.mesh = rm
-	right.material_override = rock_mat
-	right.position = Vector3(1.35, 1.1, 0.5)
-	right.rotation_degrees = Vector3(0, -8, 6)
-	cave.add_child(right)
-
-	var top := MeshInstance3D.new()
-	var tm := BoxMesh.new()
-	tm.size = Vector3(3.4, 0.9, 1.4)
-	top.mesh = tm
-	top.material_override = rock_mat
-	top.position = Vector3(0, 2.35, 0.4)
-	top.rotation_degrees = Vector3(4, 0, 0)
-	cave.add_child(top)
-
-	# Simple collision for cave rocks
-	var body := StaticBody3D.new()
-	body.add_to_group("build_surface")
-	cave.add_child(body)
-	for mdata in [
-		{"pos": Vector3(0, 0.8, -0.2), "size": Vector3(4.0, 2.2, 3.6)},
-		{"pos": Vector3(-1.35, 1.1, 0.5), "size": Vector3(0.9, 2.4, 1.2)},
-		{"pos": Vector3(1.35, 1.1, 0.5), "size": Vector3(0.9, 2.4, 1.2)},
-		{"pos": Vector3(0, 2.35, 0.4), "size": Vector3(3.4, 0.9, 1.4)},
-	]:
-		var cs := CollisionShape3D.new()
-		var bs := BoxShape3D.new()
-		bs.size = mdata["size"]
-		cs.shape = bs
-		cs.position = mdata["pos"]
-		body.add_child(cs)
-
 func _add_tri(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, uva: Vector2, uvb: Vector2, uvc: Vector2) -> void:
 	st.set_color(_height_color(a.y))
 	st.set_uv(uva)
@@ -275,15 +152,13 @@ func _add_tri(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, uva: Vector2,
 
 func _height_color(h: float) -> Color:
 	if h < water_level + 0.3:
-		return Color(0.58, 0.52, 0.36, 1.0) # shore/sand
-	elif h < 2.5:
-		return Color(0.23, 0.5, 0.21, 1.0) # grass
-	elif h < 7.0:
-		return Color(0.3, 0.45, 0.24, 1.0) # hills
-	elif h < 12.0:
-		return Color(0.45, 0.43, 0.38, 1.0) # mountain rock
+		return Color(0.55, 0.5, 0.35, 1.0) # shore/sand
+	elif h < 2.0:
+		return Color(0.24, 0.52, 0.22, 1.0) # grass
+	elif h < 6.0:
+		return Color(0.3, 0.45, 0.24, 1.0) # hill
 	else:
-		return Color(0.82, 0.84, 0.86, 1.0) # snowy peaks
+		return Color(0.55, 0.55, 0.52, 1.0) # rock
 
 func get_height_at(world_x: float, world_z: float) -> float:
 	return _height_at(world_x, world_z)
