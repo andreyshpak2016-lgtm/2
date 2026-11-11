@@ -48,13 +48,21 @@ if ($LASTEXITCODE -eq 0) { throw 'Нет изменений для коммит�
 
 Write-Host "=== 4/4 Публикация в git (origin) ===" -ForegroundColor Cyan
 & $Git -C $Repo tag -a $Tag -m $Message
-if (-not (Get-Command timeout -ErrorAction SilentlyContinue)) {
-    # push может занять время
-}
+
+# PS 5.1: stderr от git (прогресс push) при EAP=Stop бросает NativeCommandError,
+# поэтому на время push переходим в режим Continue и опираемся на $LASTEXITCODE.
+$prevEap = $ErrorActionPreference
+$ErrorActionPreference = 'Continue'
 $push = & $Git -C $Repo push origin HEAD 2>&1
-if ($LASTEXITCODE -ne 0) { throw "Push ветки не удался: $($push -join ' ')" }
+$pushCode = $LASTEXITCODE
 $pushTag = & $Git -C $Repo push origin $Tag 2>&1
-if ($LASTEXITCODE -ne 0) { throw "Push тега $Tag не удался: $($pushTag -join ' ')" }
+$tagCode = $LASTEXITCODE
+$ErrorActionPreference = $prevEap
+
+if ($pushCode -ne 0) { Write-Host $push; throw "Push ветки не удался (код $pushCode)" }
+if ($tagCode -ne 0)  { Write-Host $pushTag; throw "Push тега $Tag не удался (код $tagCode)" }
+Write-Host ($push -join ' ')
+Write-Host ($pushTag -join ' ')
 
 Write-Host ""
 Write-Host "Готово: $Tag опубликована в origin" -ForegroundColor Green
