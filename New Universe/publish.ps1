@@ -29,7 +29,7 @@ if (-not $Version) {
         Select-Object -Last 1
     if ($latest) {
         $v = [version]($latest -replace '^v', '')
-        $Version = '{0}.{1}.{2}' -f $v.Major, $v.Minor, $v.Build + 1
+        $Version = '{0}.{1}.{2}' -f $v.Major, $v.Minor, ($v.Build + 1)
     } else {
         $Version = '1.0.0'
     }
