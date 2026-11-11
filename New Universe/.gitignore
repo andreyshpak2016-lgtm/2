@@ -1,0 +1,26 @@
+# Зависимости
+node_modules/
+__pycache__/
+venv/
+.venv/
+
+# Сборка / вывод
+dist/
+build/
+out/
+target/
+*.log
+
+# Локальные данные и секреты
+.env
+.env.*
+*.local
+
+# Сysteма / редакторы
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*~
